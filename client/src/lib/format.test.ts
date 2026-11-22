@@ -2,14 +2,16 @@ import { describe, it, expect } from "vitest";
 import { formatCost, formatTokens, NO_VALUE } from "./format";
 
 describe("formatCost", () => {
-  it("renders 3 decimals", () => {
-    expect(formatCost(0.014)).toBe("$0.014");
-    expect(formatCost(0.012)).toBe("$0.012");
-    expect(formatCost(1.5)).toBe("$1.500");
+  it("renders 5 decimals", () => {
+    expect(formatCost(0.014)).toBe("$0.01400");
+    expect(formatCost(0.00042)).toBe("$0.00042");
+    expect(formatCost(0.000123456)).toBe("$0.00012");
+    expect(formatCost(1.5)).toBe("$1.50000");
+    expect(formatCost(0)).toBe("$0.00000");
   });
 
-  it("shows <$0.001 for positive micro costs, never $0.000", () => {
-    expect(formatCost(0.0002)).toBe("<$0.001");
+  it("shows <$0.00001 for positive costs below the smallest step, never $0.00000", () => {
+    expect(formatCost(0.000004)).toBe("<$0.00001");
   });
 
   it("shows the placeholder for null / undefined / non-finite, never $0.00", () => {

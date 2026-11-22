@@ -216,6 +216,10 @@ d('A2 reviews + agents (Testcontainers pg)', () => {
     const list = (await app.inject({ method: 'GET', url: `/repos/${repo.id}/pulls` })).json();
     const row = list.find((p: { number: number }) => p.number === 482);
     expect(row.cost_usd).toBe(run!.costUsd);
+    // PR list FINDINGS = severity counts of the latest review (the grounded CRITICAL).
+    expect(row.findings_critical).toBe(1);
+    expect(row.findings_warning).toBe(0);
+    expect(row.findings_suggestion).toBe(0);
 
     await app.close();
   });

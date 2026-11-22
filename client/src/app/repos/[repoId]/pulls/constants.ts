@@ -1,3 +1,5 @@
+// Type-only on purpose: a runtime import of @devdigest/shared breaks Next's webpack (500 on every page).
+import type { Severity } from "@devdigest/shared";
 import type { PrMeta } from "../../../../lib/types";
 
 /** Constants for the PR list page (/repos/:repoId/pulls). */
@@ -23,8 +25,15 @@ export const SIZE_COLOR: Record<string, string> = {
   L: "var(--crit)",
 };
 
-/** Grid template for both the header row and PR rows. */
-export const GRID = "1fr 132px 92px 60px 118px 70px 78px";
+/** Grid template for both the header row and PR rows (one track per COLUMN_KEYS entry). */
+export const GRID = "1fr 132px 92px 60px 112px 118px 70px 78px";
+
+/** FINDINGS column: severity → its PrMeta count field, in display order. */
+export const FINDINGS_FIELDS = [
+  { sev: "CRITICAL", field: "findings_critical" },
+  { sev: "WARNING", field: "findings_warning" },
+  { sev: "SUGGESTION", field: "findings_suggestion" },
+] as const satisfies readonly { sev: Severity; field: keyof PrMeta }[];
 
 /** Line-count thresholds for the S/M/L size bucket. */
 export const SIZE_SMALL_MAX = 100;
@@ -44,6 +53,7 @@ export const COLUMN_KEYS: string[] = [
   "author",
   "size",
   "score",
+  "findings",
   "status",
   "cost",
   "updated",

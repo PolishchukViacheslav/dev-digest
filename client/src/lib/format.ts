@@ -6,14 +6,19 @@
 /** Placeholder for "no data" (failed/cancelled run, legacy row, unknown price). */
 export const NO_VALUE = "—";
 
+/** Decimal places in a USD cost. 5, so cheap-model runs (fractions of a cent) stay readable. */
+export const COST_DECIMALS = 5;
+
 /**
- * USD cost with 3 decimals: `$0.014`. Values above zero but below a tenth of a
- * cent show `<$0.001` instead of a misleading `$0.000`. Null/undefined → `—`.
+ * USD cost with COST_DECIMALS decimals: `$0.00042`. Values above zero but below
+ * the smallest shown step show `<$0.00001` instead of a misleading `$0.00000`.
+ * Null/undefined → `—`.
  */
 export function formatCost(usd: number | null | undefined): string {
   if (usd == null || !Number.isFinite(usd)) return NO_VALUE;
-  if (usd > 0 && usd < 0.001) return "<$0.001";
-  return `$${usd.toFixed(3)}`;
+  const step = 10 ** -COST_DECIMALS;
+  if (usd > 0 && usd < step) return `<$${step.toFixed(COST_DECIMALS)}`;
+  return `$${usd.toFixed(COST_DECIMALS)}`;
 }
 
 /** One token count: integers under 1000 (`512`), otherwise `8.2K`. */

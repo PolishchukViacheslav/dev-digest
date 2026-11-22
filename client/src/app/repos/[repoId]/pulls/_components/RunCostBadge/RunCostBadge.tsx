@@ -1,4 +1,4 @@
-/* RunCostBadge — run/PR spend. `compact` = cost only ($0.012); `detailed` = cost + tokens in→out ($0.014 · 8.2K→1.3K). */
+/* RunCostBadge — run/PR spend. `compact` = cost only ($0.01200); `detailed` = cost + tokens in→out ($0.01400 · 8.2K→1.3K). */
 "use client";
 
 import React from "react";

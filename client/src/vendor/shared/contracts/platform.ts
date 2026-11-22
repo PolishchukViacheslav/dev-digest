@@ -172,6 +172,11 @@ export const PrMeta = z.object({
   updated_at: z.string().nullish(),
   // Latest-review score (list endpoint only; null/absent until reviewed).
   score: z.number().int().nullish(),
+  // Finding counts per severity in that same latest review (list endpoint only;
+  // null/absent until reviewed, 0 when the review found nothing at that level).
+  findings_critical: z.number().int().nullish(),
+  findings_warning: z.number().int().nullish(),
+  findings_suggestion: z.number().int().nullish(),
   // Sum of cost_usd over all runs of this PR (list endpoint only); null when no run has a price.
   cost_usd: z.number().nullish(),
 });

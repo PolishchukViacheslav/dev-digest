@@ -7,12 +7,12 @@ afterEach(cleanup);
 describe("RunCostBadge", () => {
   it("compact: shows cost only", () => {
     render(<RunCostBadge costUsd={0.012} variant="compact" />);
-    expect(screen.getByText("$0.012")).toBeInTheDocument();
+    expect(screen.getByText("$0.01200")).toBeInTheDocument();
   });
 
   it("detailed: shows cost and tokens in→out", () => {
     render(<RunCostBadge costUsd={0.014} tokensIn={8200} tokensOut={1300} variant="detailed" />);
-    expect(screen.getByText("$0.014")).toBeInTheDocument();
+    expect(screen.getByText("$0.01400")).toBeInTheDocument();
     expect(screen.getByText("8.2K→1.3K")).toBeInTheDocument();
   });
 
