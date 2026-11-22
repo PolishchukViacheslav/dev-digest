@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import type { PrMeta, PrDetail, GitHubClient, PrReviewComment } from '@devdigest/shared';
 import { PrCommentInput } from '@devdigest/shared';
 import * as t from '../../db/schema.js';
@@ -129,6 +129,27 @@ export default async function pullsRoutes(appBase: FastifyInstance) {
       }
     }
 
+    // Run COST per PR = sum of cost_usd over ALL of the PR's runs. Null when no
+    // run has a known price (the list shows "—"), never a partial-looking $0.
+    const costByPr = new Map<string, number>();
+    if (prIds.length > 0) {
+      const costRows = await container.db
+        .select({ prId: t.agentRuns.prId, costUsd: t.agentRuns.costUsd })
+        .from(t.agentRuns)
+        .where(
+          and(
+            eq(t.agentRuns.workspaceId, workspaceId),
+            inArray(t.agentRuns.prId, prIds),
+            isNotNull(t.agentRuns.costUsd),
+          ),
+        );
+      for (const cr of costRows) {
+        if (cr.prId && cr.costUsd != null) {
+          costByPr.set(cr.prId, (costByPr.get(cr.prId) ?? 0) + cr.costUsd);
+        }
+      }
+    }
+
     const now = Date.now();
     return rows.map((r) => {
       const review = latestReviewByPr.get(r.id);
@@ -153,6 +174,7 @@ export default async function pullsRoutes(appBase: FastifyInstance) {
         opened_at: r.openedAt?.toISOString() ?? null,
         updated_at: r.updatedAt?.toISOString() ?? null,
         score: review ? review.score : null,
+        cost_usd: costByPr.get(r.id) ?? null,
       };
     });
   });

@@ -159,7 +159,7 @@ d('A2 reviews + agents (Testcontainers pg)', () => {
 
   it('runs a review: map-reduce + grounding drops the hallucinated finding, keeps the valid one', async () => {
     const app = await appWith(REVIEW_FIXTURE);
-    const { pr } = await setupRepoAndPr(pg.handle.db, workspaceId);
+    const { repo, pr } = await setupRepoAndPr(pg.handle.db, workspaceId);
 
     const agent = (
       await app.inject({
@@ -208,6 +208,14 @@ d('A2 reviews + agents (Testcontainers pg)', () => {
     expect(run!.status).toBe('done');
     expect(run!.findingsCount).toBe(1);
     expect(run!.grounding).toBe('1/2 passed');
+    // Run cost is persisted (not dropped) and mirrored into the trace stats.
+    expect(run!.costUsd).not.toBeNull();
+    expect(trace.stats.cost_usd).toBe(run!.costUsd);
+
+    // PR list COST = sum of the PR's priced runs (here: the single run above).
+    const list = (await app.inject({ method: 'GET', url: `/repos/${repo.id}/pulls` })).json();
+    const row = list.find((p: { number: number }) => p.number === 482);
+    expect(row.cost_usd).toBe(run!.costUsd);
 
     await app.close();
   });
