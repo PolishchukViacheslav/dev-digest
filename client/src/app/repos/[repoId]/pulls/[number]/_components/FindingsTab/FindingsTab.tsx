@@ -71,6 +71,14 @@ export function FindingsTab({
     setTarget((p) => ({ runId, n: (p?.n ?? 0) + 1 }));
   }, []);
 
+  // Timeline severity icons + popover reuse the findings already loaded for the
+  // accordions below (joined on run_id) — no extra request.
+  const findingsByRun = React.useMemo(() => {
+    const map: Record<string, FindingRecord[]> = {};
+    for (const review of runs) if (review.run_id) map[review.run_id] = review.findings;
+    return map;
+  }, [runs]);
+
   return (
     <section>
       {liveRunIds.length > 0 && (
@@ -134,6 +142,7 @@ export function FindingsTab({
             onOpenTrace={handleOpenTrace}
             onGoToReview={handleGoToReview}
             onDelete={handleDelete}
+            findingsByRun={findingsByRun}
           />
         </div>
       )}

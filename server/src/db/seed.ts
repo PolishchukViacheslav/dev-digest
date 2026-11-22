@@ -147,6 +147,40 @@ export async function seed(db: Db): Promise<{ workspaceId: string; userId: strin
       })
       .returning();
 
+    // Demo agent runs so the timeline + PR list COST column show real data.
+    // One completed run with a price, and one quota failure with no cost (→ "—").
+    await db.insert(t.agentRuns).values([
+      {
+        workspaceId,
+        prId: pr!.id,
+        provider: 'openrouter',
+        model: DEFAULT_MODEL,
+        status: 'done',
+        durationMs: 8200,
+        tokensIn: 8200,
+        tokensOut: 1300,
+        costUsd: 0.014,
+        findingsCount: 3,
+        grounding: '3/3 passed',
+        score: 61,
+        blockers: 2,
+      },
+      {
+        workspaceId,
+        prId: pr!.id,
+        provider: 'openai',
+        model: 'gpt-4.1',
+        status: 'failed',
+        durationMs: 300,
+        tokensIn: 0,
+        tokensOut: 0,
+        costUsd: null,
+        findingsCount: 0,
+        grounding: '0/0 passed',
+        error: '429 You exceeded your current quota, please check your plan and billing details.',
+      },
+    ]);
+
     await db.insert(t.findings).values([
       {
         reviewId: review!.id,
