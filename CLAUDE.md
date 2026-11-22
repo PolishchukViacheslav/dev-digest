@@ -32,7 +32,7 @@ Next.js 15 + React 19 · TanStack Query 5 · Vitest 2
 ## Do not touch
 - Applied migrations in `server/src/db/migrations/`
 - `docker compose down -v` — deletes the dev DB volume with every imported repo and review
-- `.claude/skills/*` (vendored, pinned by `skills-lock.json`) · lockfiles by hand
+- Vendored skills in `.claude/skills/` (pinned by `skills-lock.json`; `engineering-insights` is ours) · lockfiles by hand
 
 ## Docs — read only when the task needs it
 - Product overview, roadmap, architecture diagram → `README.md`
@@ -42,6 +42,10 @@ Next.js 15 + React 19 · TanStack Query 5 · Vitest 2
 - Specs for features spanning ≥2 packages → `specs/` (template `specs/_template.md`)
 - Cross-package lessons learned → `INSIGHTS.md`
 
-## Insights
-After a task, if something was non-obvious, append one line to the nearest `INSIGHTS.md`:
-`- YYYY-MM-DD · <area> · <what happened> → <rule/fix>`. Don't edit CLAUDE.md for this.
+## Insights loop (mandatory)
+- Start: when a request concerns code, read the `INSIGHTS.md` nearest to the files involved
+  (`server/src/modules/repo-intel/`, `server/`, `client/`, `reviewer-core/`, `e2e/`; root for cross-package)
+  before planning or editing. Treat entries as high-confidence guidance unless the code or the user says otherwise.
+  Open your first reply on the task with one line: `Insights read: <module> — <entries that apply | none relevant>`.
+- End: after every coding task, run the `engineering-insights` skill. It re-reads the file and appends only
+  substantial new findings — often nothing.

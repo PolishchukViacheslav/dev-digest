@@ -41,6 +41,6 @@
 
 ## Docs — on demand
 - API map, request/DI flow, env vars → `README.md`
-- repo-intel pipeline + facade → `src/modules/repo-intel/README.md`
+- repo-intel pipeline + facade → `src/modules/repo-intel/README.md` · its lessons → `src/modules/repo-intel/INSIGHTS.md`
 - Test split → `../TESTING.md`
 - Design docs → `docs/` · Specs → `specs/` · Lessons → `INSIGHTS.md`
